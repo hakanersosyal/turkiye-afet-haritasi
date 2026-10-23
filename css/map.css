@@ -192,3 +192,30 @@
 .rupture.old { stroke: var(--deprem-2); }
 .gap-seg { fill: none; stroke: var(--danger); stroke-width: 9px; stroke-dasharray: 2 10; stroke-linecap: round; vector-effect: non-scaling-stroke; }
 .dlabel { font-family: var(--f-display); font-size: calc(var(--u) * 14px); fill: var(--ink); stroke: var(--signal); stroke-width: calc(var(--u) * 4px); paint-order: stroke; stroke-linejoin: round; text-anchor: middle; }
+
+/* ------------------------------------------------------------------ günün bilgisi (haritanın sağ alt köşesinde, Suriye-Irak üstünde; dar ekranda panelde) */
+.daily { background: var(--fact-bg); border: 1px solid var(--fact-line); border-radius: var(--r-md); padding: .6rem .8rem .7rem; font-size: .86rem; line-height: 1.45; }
+.mapwrap .daily { position: absolute; right: .8rem; bottom: 2.2rem; width: min(17.5rem, calc(100% - 1.6rem)); box-shadow: var(--shadow-1); z-index: 3; }
+.mapwrap .daily.shut { width: auto; text-align: right; padding: 0; border: 0; background: none; box-shadow: none; }
+.mapwrap .daily.off { display: none; }
+.daily-open {
+  display: inline-flex; align-items: center; gap: .35rem; border: 1px solid var(--fact-line); background: var(--fact-bg); color: var(--ink);
+  border-radius: 999px; padding: .35rem .8rem .35rem .6rem; font-weight: 700; font-size: .8rem; cursor: pointer; box-shadow: var(--shadow-1);
+}
+.daily .ico { width: 1.15rem; height: 1.15rem; }
+.daily .dh { display: flex; align-items: center; gap: .35rem; margin-bottom: .4rem; }
+.daily .dh b { font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; }
+.daily .dh span { font-size: .72rem; color: var(--ink-3); margin-left: auto; }
+.daily .dh .ibtn { width: 1.7rem; height: 1.7rem; box-shadow: none; border: 0; background: var(--surface); margin-right: -.3rem; }
+.daily .dh .ibtn .ico { width: .95rem; height: .95rem; }
+.daily .dt { display: flex; align-items: center; flex-wrap: wrap; gap: .2rem .6rem; margin: 0 0 .25rem; }
+.daily .dt > span { display: flex; align-items: center; gap: .45rem; font-weight: 700; }
+.daily .dt .tile { width: 1.7rem; height: 1.7rem; border-radius: 8px; }
+.daily .dt .tile .ico { width: 1rem; height: 1rem; }
+.daily .dt .plate { border-radius: 5px; box-shadow: none; }
+.daily .dt .plate .tr { font-size: .42rem; padding: .1rem .15rem; }
+.daily .dt .plate .no { font-size: .9rem; padding: .05rem .3rem 0; }
+.daily p { margin: 0; }
+.daily .tlink { display: inline-flex; align-items: center; gap: .15rem; margin-left: auto; padding: 0; font-size: .82rem; }
+.daily .tlink .ico { width: 1em; height: 1em; }
+.daily-p { display: none; }

@@ -1,9 +1,9 @@
-// Türkiye Afet Haritası · Son 1 hafta: araştırılmış gerçek olaylar ve kaynakları
+// Türkiye Afet Haritası · Son olaylar: yakın zamanda yaşanan, araştırılmış gerçek afetler ve kaynakları
 'use strict';
 
 // Kaynaklar: [ad, bağlantı]. Olaylar haritadaki olaylara da eklenir (bkz. core/state.js).
 // Rakamlar kurumların kendi açıklamalarından alınır; bağlantı ya kurumun sitesi ya da açıklamayı aktaran haber ajansıdır (AA, TRT Haber, DHA).
-const WEEK_SRC = {
+const RECENT_SRC = {
   valilik: ["İstanbul Valisi'nin açıklaması: ihbarlar ve hasar (AA, 19 Ekim)", "https://www.aa.com.tr/tr/gundem/istanbul-valisi-gul-istanbulda-selden-etkilenenlerin-zararlari-bugun-odenmeye-baslanacak/4093343"],
   valilikSon: ["İstanbul Valiliği: Can kaybı 7, arama-kurtarma sona erdi (TRT Haber, 20 Ekim)", "https://www.trthaber.com/haber/gundem/istanbulda-sel-nedeniyle-can-kaybi-7ye-yukseldi-960627.html"],
   akom: ["İBB AKOM yağış ölçümleri (AKOM, 15 Ekim)", "https://akom.ibb.istanbul/haberler/aylik-toplam-yagisin-4-kati-bir-gunde-dustu/"],
@@ -23,47 +23,40 @@ const WEEK_SRC = {
   katalog: ["AFAD Deprem Kataloğu", "https://deprem.afad.gov.tr/event-catalog"]
 };
 
-const WEEK = {
-  label: "14–21 Ekim 2026",
-  updated: "21 Ekim 2026, 22.00",
-  lede: "13 Ekim'de başlayıp 14 Ekim'de çok şiddetlenen yağışlar, başta İstanbul olmak üzere Marmara'da ve Antalya'da sellere yol açtı. Ne yazık ki İstanbul'da 7, Kocaeli'de 3 kişi hayatını kaybetti. Bu hafta hasar yapan bir deprem olmadı.",
-  // Panelin üstündeki sayılar (deprem sayısı AFAD verisinden ikinci sıraya eklenir)
-  stats: [
-    ["277,1", "kg/m² yağış: 13–15 Ekim'de Beykoz'a düştü", "sel-3"],
-    ["%52,43", "İstanbul barajlarının doluluğu (18 Ekim)", "kuraklik-3"],
-    ["60.395", "AFAD'a göre sahada görev yapan personel (17 Ekim)", "safe"]
-  ],
+const RECENT = {
+  updated: "21 Ekim 2026",
+  // Yeni olayları listenin başına ekleyin. "on": olayın bittiği gün; 30 gün boyunca YENİ olarak işaretlenir.
   events: [
-    { id: "w2026_ist", hz: "sel", y: 2026, date: "14–15 Ekim 2026", t: "İstanbul Selleri", sub: "Sarıyer, Ayazağa", lat: 41.112, lon: 29.015, il: 34,
+    { id: "w2026_ist", on: "2026-10-15", hz: "sel", y: 2026, date: "14–15 Ekim 2026", t: "İstanbul Selleri", sub: "Sarıyer, Ayazağa", lat: 41.112, lon: 29.015, il: 34,
       loss: "7 kişi",
       text: "13 Ekim'de başlayıp 14 Ekim'de çok şiddetlenen sağanak İstanbul'da dereleri taşırdı; sokakları, alt geçitleri, evleri ve iş yerlerini su bastı. En çok etkilenen yerlerden biri Sarıyer'in Ayazağa Mahallesi'ydi: Bakan Kurum'a göre burada 300 iş yeri ve 200 araç zarar gördü. AKOM'un ölçümlerine göre 13–15 Ekim arasında Beykoz'a metrekareye 277,1, Sarıyer'e 211,8 kilogram yağış düştü. Beykoz'daki miktar 1942'den bu yana ölçülen en yüksek yağış oldu. Bu, İstanbul'un bir Ekim ayı boyunca aldığı ortalama yağışın (66,3 kg) 4 katından fazla! Vali'nin açıklamasına göre yaklaşık 19 bin 300 ihbar geldi; kabaca 3 bin ev ve iş yeri ciddi hasar gördü. Bakan Kurum'a göre kentte 48 heyelan oldu, 39 ilçede 53 istinat duvarı yıkıldı.",
       lesson: "Dereler taştığında eski yataklarını geri ister. Dere yataklarına ve kenarlarına bina yapılmamalı; su basmış yollara ve alt geçitlere asla girilmemeli.",
-      src: [WEEK_SRC.valilikSon, WEEK_SRC.valilik, WEEK_SRC.akom, WEEK_SRC.kurum] },
-    { id: "w2026_kocaeli", hz: "sel", y: 2026, date: "14–15 Ekim 2026", t: "Kocaeli'de Sel", sub: "Başiskele, Kartepe, Gebze", lat: 40.70, lon: 29.96, il: 41,
+      src: [RECENT_SRC.valilikSon, RECENT_SRC.valilik, RECENT_SRC.akom, RECENT_SRC.kurum] },
+    { id: "w2026_kocaeli", on: "2026-10-15", hz: "sel", y: 2026, date: "14–15 Ekim 2026", t: "Kocaeli'de Sel", sub: "Başiskele, Kartepe, Gebze", lat: 40.70, lon: 29.96, il: 41,
       loss: "3 kişi",
       text: "Sağanak Kocaeli'de de dereleri taşırdı. 14 Ekim akşamından 15 Ekim akşamına kadar Kartepe'ye metrekareye 214,9, Başiskele'ye 197,8 kilogram yağış düştü. D-130 kara yolundaki Seymen Tüneli'ni su bastı; Seymen'de ve Gebze'de suların arasında mahsur kalan 7 kişi kurtarıldı. Ne yazık ki Gebze'de sele kapılan bir cipteki 2 kişi ile Başiskele'de aracıyla sele kapılan 1 kişi hayatını kaybetti. Valilik okulları 15 ve 16 Ekim'de tatil etti.",
       lesson: "Su basmış yollara ve alt geçitlere araçla girilmemeli. Yalnızca 60 cm su bir otomobili sürükleyebilir!",
-      src: [WEEK_SRC.kocaeliBld, WEEK_SRC.gebze, WEEK_SRC.basiskele, WEEK_SRC.okul] },
-    { id: "w2026_akcakese", hz: "heyelan", y: 2026, date: "15 Ekim 2026", t: "Kandıra Yolunda Heyelan", sub: "Kocaeli, İzmit–Kandıra yolu", lat: 41.0, lon: 30.05, il: 41,
+      src: [RECENT_SRC.kocaeliBld, RECENT_SRC.gebze, RECENT_SRC.basiskele, RECENT_SRC.okul] },
+    { id: "w2026_akcakese", on: "2026-10-15", hz: "heyelan", y: 2026, date: "15 Ekim 2026", t: "Kandıra Yolunda Heyelan", sub: "Kocaeli, İzmit–Kandıra yolu", lat: 41.0, lon: 30.05, il: 41,
       text: "14 Ekim gecesi başlayıp ertesi gün boyunca süren yağmurdan sonra yamaçlardan kayan toprak, İzmit ile Kandıra arasındaki D-605 kara yolunu iki yönde de trafiğe kapattı. Araçlar Akçakese–Pirceler köy yolundan yönlendirildi. Yuvacık Barajı yolunda da toprak kayması oldu ve 24 kişi tahliye edildi. Aynı yağışlarla İstanbul'da da 48 heyelan yaşandı.",
       lesson: "Yağmur suyu toprağı ağırlaştırır ve kaygan hâle getirir. Şiddetli yağışlardan sonra yamaçların altındaki yollarda dikkatli olunmalı, heyelan alanına yaklaşılmamalı.",
-      src: [WEEK_SRC.kocaeliBld, WEEK_SRC.kurum] },
-    { id: "w2026_sakarya", hz: "sel", y: 2026, date: "14–15 Ekim 2026", t: "Sakarya Selleri", sub: "Ferizli, Karasu", lat: 41.10, lon: 30.69, il: 54,
+      src: [RECENT_SRC.kocaeliBld, RECENT_SRC.kurum] },
+    { id: "w2026_sakarya", on: "2026-10-15", hz: "sel", y: 2026, date: "14–15 Ekim 2026", t: "Sakarya Selleri", sub: "Ferizli, Karasu", lat: 41.10, lon: 30.69, il: 54,
       text: "Sakarya'da da sel ve su baskınları yaşandı. İçişleri Bakanı'nın açıklamasına göre Ferizli'ye metrekareye 275, Karasu'ya 224 kilogram yağış düştü. 865 kişi güvenli yerlere tahliye edildi; 2 yapı ve 5 köprü yıkıldı. Tarlalar zarar gördü, bazı yerlerde elektrik ve su kesildi. Okullar iki gün tatil edildi.",
       lesson: "Yetkililer tahliye dediğinde vakit kaybetmeden uymak hayat kurtarır.",
-      src: [WEEK_SRC.sakarya, WEEK_SRC.okul] },
-    { id: "w2026_yalova", hz: "sel", y: 2026, date: "14–15 Ekim 2026", t: "Yalova'da Su Baskınları", sub: "Çınarcık, Armutlu", lat: 40.52, lon: 28.83, il: 77,
+      src: [RECENT_SRC.sakarya, RECENT_SRC.okul] },
+    { id: "w2026_yalova", on: "2026-10-15", hz: "sel", y: 2026, date: "14–15 Ekim 2026", t: "Yalova'da Su Baskınları", sub: "Çınarcık, Armutlu", lat: 40.52, lon: 28.83, il: 77,
       text: "Sağanak Yalova'da da etkili oldu; Armutlu'da bazı yolları su kapladı. Vali'nin açıklamasına göre il genelinde 101 ihbar geldi ve 8 kişi güvenli yerlere taşındı. Çınarcık'ta dere yatağına yakın 5 katlı bir binanın temelinde sorun görülünce, binada yaşayan 28 kişi tedbir amacıyla tahliye edildi. Esenköy'de su basan bir arıtma tesisinde mahsur kalan bekçi, kepçeyle kurtarıldı. Okullar 15 ve 16 Ekim'de tatil edildi.",
       lesson: "Sel sırasında yüksek ve güvenli bir yerde kal, kurtarma ekiplerini bekle. Akan suyun içinden geçmeye çalışma.",
-      src: [WEEK_SRC.yalova, WEEK_SRC.cinarcik, WEEK_SRC.mgm] },
-    { id: "w2026_demre", hz: "sel", y: 2026, date: "14 Ekim 2026", t: "Demre'de Sel", sub: "Antalya", lat: 36.245, lon: 29.985, il: 7,
+      src: [RECENT_SRC.yalova, RECENT_SRC.cinarcik, RECENT_SRC.mgm] },
+    { id: "w2026_demre", on: "2026-10-14", hz: "sel", y: 2026, date: "14 Ekim 2026", t: "Demre'de Sel", sub: "Antalya", lat: 36.245, lon: 29.985, il: 7,
       text: "Antalya'nın Demre ilçesinde sağanak taşkına yol açtı. Valiliğin açıklamasına göre Çevreli Mahallesi'ndeki bir okulda mahsur kalan 13 öğrenci ve 7 öğretmen ile bir serada mahsur kalan 2 kişi; AFAD, emniyet, jandarma ve belediye ekiplerinin müdahalesiyle güvenli yerlere ulaştırıldı. Herkesin sağlık durumu iyiydi. Belediye başkanına göre Çevreli'deki seraların yaklaşık yüzde 70'i zarar gördü.",
       lesson: "Sel sırasında sakin kal; öğretmenlerinin ve kurtarma ekiplerinin söylediklerine uy. Yüksek ve güvenli bir yerde yardımı bekle.",
-      src: [WEEK_SRC.demre] },
-    { id: "w2026_baraj", hz: "kuraklik", y: 2026, date: "14–18 Ekim 2026", t: "İstanbul Barajları Doldu", sub: "4 günde 14 puan arttı", lat: 41.07, lon: 29.36, il: 34,
+      src: [RECENT_SRC.demre] },
+    { id: "w2026_baraj", on: "2026-10-18", hz: "kuraklik", y: 2026, date: "14–18 Ekim 2026", t: "İstanbul Barajları Doldu", sub: "4 günde 14 puan arttı", lat: 41.07, lon: 29.36, il: 34,
       text: "İSKİ verilerine göre İstanbul barajlarının doluluk oranı 14 Ekim'de yüzde 38,06'ydı. Şiddetli yağışlardan sonra yalnızca 4 gün içinde, 18 Ekim'de yüzde 52,43'e yükseldi. Geçen yıl aynı gün bu oran yüzde 24,51'di.",
       lesson: "Aynı yağmur hem sele yol açtı hem de barajları doldurdu. Yine de su kaynaklarımız sınırlı: Suyu her zaman idareli kullanmalıyız.",
-      src: [WEEK_SRC.iski, WEEK_SRC.iskiCanli] }
+      src: [RECENT_SRC.iski, RECENT_SRC.iskiCanli] }
   ],
   lessons: [
     "Dere yataklarına ve kenarlarına bina yapılmamalı. Dereler taştığında eski yataklarını geri ister.",
@@ -73,5 +66,5 @@ const WEEK = {
     "Her gün onlarca küçük deprem olur ve çoğunu hissetmeyiz. Hazırlıklı olmak her zaman önemli!"
   ],
   // Olaylarda geçmeyen genel kaynaklar
-  sources: [WEEK_SRC.katalog, WEEK_SRC.afad]
+  sources: [RECENT_SRC.afad]
 };

@@ -13,7 +13,8 @@
   .mapwrap { height: clamp(17rem, 64vw, 42rem); flex: none; }
   #map { touch-action: pan-y; }
   #map.zoomed { touch-action: none; }
-  .rail-h, .sos { display: none; }
+  .rail-h, .sos, .mapwrap .daily { display: none; }
+  .daily-p { display: block; }
   .hz-list { flex-direction: row; overflow-x: auto; padding-bottom: .35rem; scroll-snap-type: x proximity; }
   .hz { flex: none; grid-template-columns: 2.2rem auto; scroll-snap-align: start; background: var(--surface); border-color: var(--line); padding: .35rem .7rem .35rem .4rem; }
   .hz .tile { width: 2.2rem; height: 2.2rem; }

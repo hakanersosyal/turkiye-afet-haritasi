@@ -71,15 +71,11 @@ function viewQuiz() {
   }
   return html;
 }
-function rankOf(sc) { return RANKS.find(([m]) => sc >= m)[1]; }
+const rankOf = sc => RANKS.find(([m]) => sc >= m * QUIZ.length);
 function quizResult() {
-  const sc = S.q.score, n = QUIZ.length;
-  const msg = sc >= 15 ? "Muhteşem! Afetler hakkında gerçekten çok şey biliyorsun. Bildiklerini ailenle de paylaş!"
-    : sc >= 12 ? "Çok iyi! Afetlere karşı bilinçli bir öğrencisin. Birkaç konuya daha göz atarsan tam puan senin!"
-      : sc >= 8 ? "Güzel! Haritayı biraz daha keşfedip yeniden denersen puanın kesinlikle artacak."
-        : "İyi bir başlangıç! Afet türlerini haritada inceleyip yeniden dene.";
+  const sc = S.q.score, n = QUIZ.length, [, rank, msg] = rankOf(sc);
   return `<div class="qres"><div class="eyebrow" style="--c:var(--ink-2)">${ic("award")} Yarışma bitti</div>
-<div class="score">${sc} / ${n}</div><span class="rank">${ic("award")} ${rankOf(sc)}</span>
+<div class="score">${sc} / ${n}</div><span class="rank">${ic("award")} ${rank}</span>
 <p style="margin-top:.9rem">${msg}</p>
 <div class="field"><label for="certName">Sertifikada yazacak adın</label><input id="certName" maxlength="40" autocomplete="off" placeholder="Adın ve soyadın" value="${esc(S.q.name)}"></div>
 <div class="row" style="justify-content:center"><button class="btn btn-primary" data-act="cert">${ic("award")} Sertifikamı göster</button><button class="btn" data-act="qr">Yeniden oyna</button></div></div>`;
@@ -93,7 +89,7 @@ function showCert() {
   openModal("Afet Bilinci Sertifikası", `<div class="cert" id="certPrint"><div class="t1">Türkiye Afet Haritası</div><h3>Afet Bilinci Sertifikası</h3>
 <p>Bu sertifika,</p><div class="who">${esc(S.q.name || "Afet Bilinci Kahramanı")}</div>
 <p>adlı öğrencinin Türkiye Afet Haritası Bilgi Yarışması'nda ${n} sorunun ${sc} tanesini doğru cevaplayarak aşağıdaki unvanı kazandığını gösterir.</p>
-<span class="rank">${rankOf(sc)}</span>
-<div class="sig"><div>Tarih<br><b>${date}</b></div><div>Hazırlayan<br><span class="name">Hakan Er</span></div></div></div>
+<span class="rank">${rankOf(sc)[1]}</span>
+<div class="sig"><div>Tarih<br><b>${date}</b></div><div>Hazırlayan<br><span class="name">Hakan Er</span><br>Sosyal Bilgiler Öğretmeni</div></div></div>
 ${canPrint ? `<div class="row" style="justify-content:center"><button class="btn btn-primary" data-act="print">Yazdır</button></div>` : `<p class="note" style="text-align:center">Sertifikanı saklamak için ekran görüntüsü alabilirsin.</p>`}`);
 }

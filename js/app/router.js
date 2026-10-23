@@ -30,12 +30,15 @@ function act(a, d) {
     case "bag-item": if (!S.bag.checked) { S.bag.picked.has(d.id) ? S.bag.picked.delete(d.id) : S.bag.picked.add(d.id); bagRender(); } break;
     case "bag-check": S.bag.checked = true; bagRender(); $("#dlgBody").scrollTop = 0; break;
     case "bag-reset": bagReset(); bagRender(); $("#dlgBody").scrollTop = 0; break;
-    case "wk-ev": weekEvent(d.id, { fly: true }); break;
-    case "wk-q": weekQuake(+d.i, { fly: true }); break;
-    case "wk-prov": weekProv(+d.id, { fly: true }); break;
-    case "wk-back": weekBack(); break;
-    case "wk-zoom": flyToBox(bboxOf([34, 41, 54, 77]), .2); break;
+    case "rc-ev": rcEvent(d.id, { fly: true }); break;
+    case "rc-q": rcQuake(+d.i, { fly: true }); break;
+    case "rc-prov": rcProv(+d.id, { fly: true }); break;
+    case "rc-back": rcBack(); break;
+    case "rc-zoom": rcZoom(); break;
+    case "rc-reload": loadQuakes(); break;
     case "toast-x": hideToast(); break;
+    case "daily-shut": dailyShut(true); break;
+    case "daily-open": dailyShut(false); break;
     case "to-panel": hideToast(); panel.scrollIntoView({ behavior: RM.matches ? "auto" : "smooth", block: "start" }); break;
   }
 }
@@ -45,7 +48,7 @@ function delegate(root) {
     if (b && root.contains(b) && !b.disabled) act(b.dataset.act, b.dataset);
   });
 }
-[panel, $("#mapfoot"), toastEl, $("#dlgBody"), $(".dlg-h")].forEach(delegate);
+[panel, $("#mapfoot"), toastEl, $("#dlgBody"), $(".dlg-h"), $("#daily")].forEach(delegate);
 dlg.addEventListener("click", e => { if (e.target === dlg) closeModal(); });
 $("#hzList").addEventListener("click", e => { const b = e.target.closest(".hz"); if (b) setHazard(b.dataset.k); });
 $$(".modes [data-mode]").forEach(b => b.addEventListener("click", () => setMode(b.dataset.mode)));
@@ -75,7 +78,7 @@ function doSearch() {
     id = hit && hit.id;
   }
   if (id && PROV[id]) {
-    if (S.mode === "week") weekProv(id, { fly: true });
+    if (S.mode === "recent") rcProv(id, { fly: true });
     else {
       if (S.mode !== "explore") setMode("explore");
       selectProv(id, { fly: true });
@@ -89,7 +92,7 @@ sIn.addEventListener("keydown", e => { if (e.key === "Enter") doSearch(); });
 document.addEventListener("keydown", e => {
   if (e.key !== "Escape" || dlg.open) return;
   if (S.mode === "explore" && S.view.t !== "hz") act("back", {});
-  else if (S.mode === "week" && S.wk.view) weekBack();
+  else if (S.mode === "recent" && S.rc.view) rcBack();
 });
 const redrawCanvas = () => { if ($("#mlCanvas")) drawMag(); };
 matchMedia("(prefers-color-scheme: dark)").addEventListener("change", redrawCanvas);

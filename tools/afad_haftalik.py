@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""AFAD Deprem Kataloğu'ndan bir haftanın depremlerini çekip js/data/week-quakes.js dosyasını üretir.
+"""AFAD Deprem Kataloğu'ndan bir haftanın depremlerini çekip js/data/recent-quakes.js dosyasını üretir.
+
+Son Olaylar bölümü depremleri internetten canlı alır; bu dosya yalnızca internet yokken gösterilir.
 
 Kullanım:
     python3 tools/afad_haftalik.py 2026-10-14 2026-10-21
@@ -19,7 +21,7 @@ TSI = dt.timedelta(hours=3)          # AFAD saatleri UTC; Türkiye saati = UTC+3
 MIN_MAG = 2.0                        # haritada gösterilecek en küçük büyüklük
 FRAME = (25.5, 35.6, 45.0, 42.3)     # harita çerçevesi: batı, güney, doğu, kuzey
 NEAR_KM = 50                         # denizdeki bir depremi en yakın ile saymak için en büyük uzaklık
-OUT = pathlib.Path(__file__).resolve().parent.parent / "js" / "data" / "week-quakes.js"
+OUT = pathlib.Path(__file__).resolve().parent.parent / "js" / "data" / "recent-quakes.js"
 
 
 def fetch(start, end):
@@ -75,11 +77,12 @@ def main(first, last):
 
     days = round((newest - start).total_seconds() / 86400, 2)
     out = [
-        "// Türkiye Afet Haritası · Son 1 haftanın depremleri (AFAD Deprem Kataloğu)",
+        "// Türkiye Afet Haritası · Kayıtlı bir haftanın depremleri (AFAD Deprem Kataloğu)",
+        "// Son Olaylar bölümü depremleri internetten canlı alır; bu kayıt yalnızca internet yokken gösterilir.",
         "// tools/afad_haftalik.py ile üretildi; elle düzenlemeyin.",
         "'use strict';",
         "",
-        "const WEEK_QUAKES = {",
+        "const SAVED_QUAKES = {",
         f"  from: {json.dumps(start.strftime('%Y-%m-%d %H:%M'))}, to: {json.dumps(newest.strftime('%Y-%m-%d %H:%M'))}, days: {days},  // Türkiye saati",
         f"  total: {len(rows)},  // Türkiye ve çevresinde kaydedilen tüm depremler",
         f"  minMag: {MIN_MAG:g},  // haritada gösterilen en küçük büyüklük",

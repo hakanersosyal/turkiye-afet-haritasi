@@ -6,7 +6,7 @@ function renderHead() {
   let html;
   if (S.mode === "timeline") html = `<span class="tile" style="--c:var(--ink)">${ic("clock")}</span><div><h2>Deprem Zaman Tüneli</h2><p>1509'dan bugüne Türkiye'nin büyük depremleri</p></div>`;
   else if (S.mode === "quiz") html = `<span class="tile" style="--c:var(--ink)">${ic("quiz")}</span><div><h2>Bilgi Yarışması</h2><p>${QUIZ.length} soru · Bazı soruları haritada cevaplayacaksın</p></div>`;
-  else if (S.mode === "week") html = `<span class="tile" style="--c:var(--ink)">${ic("week")}</span><div><h2>Son 1 Hafta</h2><p>${WEEK.label} · Gerçek olaylar ve AFAD deprem kayıtları</p></div>`;
+  else if (S.mode === "recent") html = `<span class="tile" style="--c:var(--ink)">${ic("calendar")}</span><div><h2>Son Olaylar</h2><p>Son 7 günün depremleri ve yakın zamanda yaşanan afetler</p></div>`;
   else html = `${tile(S.hz)}<div><h2>${HAZ[S.hz].name}</h2><p>${S.hz === "iller" ? "81 il · 7 coğrafi bölge · Bir ile dokun" : HAZ[S.hz].short}</p></div>`;
   $("#mhTitle").innerHTML = html;
   $("#provSearch").disabled = S.mode === "quiz";
@@ -17,7 +17,7 @@ function renderFoot() {
   let lg;
   const k = S.hz;
   if (S.mode === "quiz") lg = `<span class="lg-t">Yarışma:</span><span class="lg-i">İl adları gizlendi. Haritayı kullanarak cevapla!</span>`;
-  else if (S.mode === "week") lg = weekLegend();
+  else if (S.mode === "recent") lg = recentLegend();
   else if (k === "iller" || k === "volkan") {
     lg = `<span class="lg-t">Bölgeler:</span>` + REGIONS.map(r => `<button class="lg-i" data-act="region" data-r="${r.k}" aria-pressed="${S.region === r.k}"><span class="sw" style="background:var(--r-${r.k})"></span>${r.n}</button>`).join("");
     if (k === "volkan") lg += `<span class="lg-i"><svg class="ico" viewBox="0 0 24 24" style="color:var(--volkan-3)">${ICON.pin}</svg>Volkan ya da volkanik yer</span>`;

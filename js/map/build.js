@@ -154,7 +154,7 @@ function buildMarkers() {
   const order = [...EVENTS].sort((a, b) => (b.mag || 0) - (a.mag || 0));
   for (const e of order) {
     const g = sv("g", {
-      class: e.wk ? "mk mk-wk" : "mk", "data-ev": e.id, "data-hz": e.hz, transform: `translate(${e.px.toFixed(1)} ${e.py.toFixed(1)})`,
+      class: e.recent ? "mk mk-rc" : "mk", "data-ev": e.id, "data-hz": e.hz, transform: `translate(${e.px.toFixed(1)} ${e.py.toFixed(1)})`,
       tabindex: "0", role: "button", "aria-label": e.t + (e.y ? ", " + e.y : "")
     }, L.markers);
     g.style.setProperty("--c", `var(--${e.hz}-3)`);
@@ -168,7 +168,7 @@ function buildMarkers() {
       sv("text", { x: (r + 4).toFixed(1), y: 4, class: "q-yr" }, s).textContent = e.y;
     } else {
       sv("circle", { cy: -16, r: 19, class: "mk-hit" }, s);
-      if (e.wk) sv("circle", { cy: -18, r: 14, class: "pin-new" }, s);
+      if (e.isNew) sv("circle", { cy: -18, r: 14, class: "pin-new" }, s);
       sv("ellipse", { cx: 0, cy: 1, rx: 7, ry: 2.6, class: "pin-sh" }, s);
       sv("path", { d: "M0 0C-2.6-6-12-9.6-12-18a12 12 0 1 1 24 0c0 8.4-9.4 12-12 18z", class: "pin" }, s);
       sv("g", { transform: "translate(-7.5 -25.5) scale(.625)", class: "pin-i" }, s).innerHTML = ICON[e.hz];

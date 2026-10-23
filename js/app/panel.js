@@ -7,7 +7,7 @@ function renderPanel() {
   let html;
   if (S.mode === "timeline") html = viewTimeline();
   else if (S.mode === "quiz") html = viewQuiz();
-  else if (S.mode === "week") html = viewWeek();
+  else if (S.mode === "recent") html = viewRecent();
   else if (S.view.t === "prov") html = viewProv(S.view.id);
   else if (S.view.t === "ev") html = viewEvent(S.view.id);
   else if (S.view.t === "fault") html = viewFault(S.view.id);
@@ -24,8 +24,9 @@ function viewIller() {
   return `<div class="hero"><div class="eyebrow" style="--c:var(--ink-2)">${ic("compass")} Hoş geldin!</div>
 <h2>Türkiye Afet Haritası</h2>
 <p class="lede">Türkiye'de hangi afetin nerede görüldüğünü keşfet. Bir afet türü seç, haritada bir ile dokun, işaretlere dokunarak gerçek olayları öğren.</p>
-<div class="byl">Hazırlayan: <b>Hakan Er</b></div></div>
-<button class="wk-promo" data-act="mode" data-m="week"><span class="tile" style="--c:var(--danger)">${ic("week")}</span><span class="wp-t"><b>Son 1 Hafta<em class="new">YENİ</em></b><span class="wp-s">${WEEK.label}: Marmara'daki seller ve haftanın depremleri</span></span>${ic("next")}</button>
+<div class="byl">Hazırlayan: <b>Hakan Er</b> · Sosyal Bilgiler Öğretmeni</div></div>
+<button class="rc-promo" data-act="mode" data-m="recent"><span class="tile" style="--c:var(--danger)">${ic("calendar")}</span><span class="wp-t"><b>Son Olaylar${RC_EVENTS.some(e => e.isNew) ? `<em class="new">YENİ</em>` : ""}</b><span class="wp-s">Son 7 günün depremleri ve yakın zamanda yaşanan afetler</span></span>${ic("next")}</button>
+<section class="daily daily-p" aria-label="Günün bilgisi">${dailyHTML()}</section>
 <section><h3>Bir afet türü seç</h3><div class="hz-cards">${HZ_ORDER.slice(1).map(k => `<button class="hz-card" data-act="hz" data-k="${k}" style="--c:var(--${k}-3)">${tile(k)}<span>${HAZ[k].name}</span></button>`).join("")}</div></section>
 <section>${factCard("iller")}</section>
 <section><h3>7 coğrafi bölge</h3><div class="regs">${REGIONS.map(r => `<button class="reg" data-act="region" data-r="${r.k}" aria-pressed="${S.region === r.k}"><span class="sw" style="background:var(--r-${r.k})"></span><span><b>${r.n} Bölgesi</b><span>${r.t}</span></span></button>`).join("")}</div></section>
@@ -54,10 +55,10 @@ function tabsHTML(k) {
 ${k === "deprem" && i === 1 ? pictos() : ""}<ul class="todo">${t[i][1].map(x => `<li>${ic("check")}<span>${x}</span></li>`).join("")}</ul>`;
 }
 function evRow(e) {
-  const badge = e.hz === "deprem" ? n1(e.mag) : e.wk ? ic(e.hz) : (e.y || ic(e.hz));
+  const badge = e.hz === "deprem" ? n1(e.mag) : e.recent ? ic(e.hz) : (e.y || ic(e.hz));
   const sub = [e.hz === "deprem" ? e.date : (e.date || e.sub), provNames(e)].filter(Boolean).join(" · ");
-  const isNew = e.wk && S.mode !== "week" ? `<em class="new">YENİ</em>` : "";
-  return `<button class="ev" data-act="${S.mode === "week" ? "wk-ev" : "ev"}" data-id="${e.id}" style="--c:var(--${e.hz}-3)"><span class="yr">${badge}</span><span><b>${e.hz === "deprem" ? e.y + " · " : ""}${e.t}${isNew}</b><span>${sub}</span></span></button>`;
+  const isNew = e.isNew ? `<em class="new">YENİ</em>` : "";
+  return `<button class="ev" data-act="${S.mode === "recent" ? "rc-ev" : "ev"}" data-id="${e.id}" style="--c:var(--${e.hz}-3)"><span class="yr">${badge}</span><span><b>${e.hz === "deprem" ? e.y + " · " : ""}${e.t}${isNew}</b><span>${sub}</span></span></button>`;
 }
 function rkRow(k, lvl) {
   return `<button class="rk${lvl === 0 ? " none" : ""}" data-act="hzkeep" data-k="${k}" style="--c:var(--${k}-3)">${tile(k)}<span class="nm">${HAZ[k].name}</span><span class="meter" aria-hidden="true">${[1, 2, 3].map(i => `<i class="${i <= lvl ? "on" : ""}"></i>`).join("")}</span><b>${LEVEL[lvl]}</b></button>`;
@@ -93,7 +94,7 @@ function eventBody(e) {
   if (e.loss) stats.push(["Can kaybı", e.loss]);
   if (e.fault && FAULT_INFO[e.fault]) stats.push(["Fay", FAULT_INFO[e.fault].n]);
   stats.push([ilsOf(e).length > 1 ? "İller" : "İl", provNames(e)]);
-  return `<div class="eyebrow">${ic(k)} ${HAZ[k].name}${e.y ? " · " + e.y : ""}${e.wk && S.mode !== "week" ? `<em class="new">SON 1 HAFTA</em>` : ""}</div>
+  return `<div class="eyebrow">${ic(k)} ${HAZ[k].name}${e.y ? " · " + e.y : ""}${e.recent && S.mode !== "recent" ? `<em class="new">SON OLAYLAR</em>` : ""}</div>
 <h2>${e.t}</h2>${e.sub ? `<p class="lede" style="margin-top:-.2rem">${e.sub}</p>` : ""}
 ${k === "deprem" ? `<div class="magbig"><span class="m">${e.mb || n1(e.mag)}</span><span><b>büyüklüğünde</b><small>${magWord(e.mag)}</small></span></div>` : ""}
 <dl class="stats">${stats.map(([a, b]) => `<div class="stat"><dt>${a}</dt><dd>${b}</dd></div>`).join("")}</dl>

@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Türkiye Afet Haritası</title>
-<meta name="description" content="Ortaokul öğrencileri için etkileşimli Türkiye afet haritası. Hazırlayan: Hakan Er">
+<meta name="description" content="Ortaokul öğrencileri için etkileşimli Türkiye afet haritası. Hazırlayan: Hakan Er, Sosyal Bilgiler Öğretmeni">
 <meta name="author" content="Hakan Er">
 <meta name="theme-color" content="#13202b">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Türkiye Afet Haritası">
-<meta property="og:description" content="Ortaokul öğrencileri için etkileşimli Türkiye afet haritası: 81 ilin afet risk karnesi, fay hatları, deprem zaman tüneli, yarışma ve son 1 haftanın gerçek olayları. Hazırlayan: Hakan Er">
+<meta property="og:description" content="Ortaokul öğrencileri için etkileşimli Türkiye afet haritası: 81 ilin afet risk karnesi, fay hatları, deprem zaman tüneli, yarışma ve son olaylar: son 7 günün depremleri ve yakın zamanda yaşanan afetler. Hazırlayan: Hakan Er, Sosyal Bilgiler Öğretmeni">
 <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,7 +22,7 @@
 <link rel="stylesheet" href="css/dialog.css">
 <link rel="stylesheet" href="css/scenes.css">
 <link rel="stylesheet" href="css/layout.css">
-<link rel="stylesheet" href="css/week.css">
+<link rel="stylesheet" href="css/recent.css">
 <link rel="stylesheet" href="css/art.css">
 <script defer src="js/data/geo.js"></script>
 <script defer src="js/data/regions.js"></script>
@@ -34,8 +34,8 @@
 <script defer src="js/data/bag.js"></script>
 <script defer src="js/data/quiz.js"></script>
 <script defer src="js/data/magnitude.js"></script>
-<script defer src="js/data/week.js"></script>
-<script defer src="js/data/week-quakes.js"></script>
+<script defer src="js/data/recent.js"></script>
+<script defer src="js/data/recent-quakes.js"></script>
 <script defer src="js/art/icons.js"></script>
 <script defer src="js/art/scenes.js"></script>
 <script defer src="js/art/bag-icons.js"></script>
@@ -52,7 +52,8 @@
 <script defer src="js/features/timeline.js"></script>
 <script defer src="js/features/quiz.js"></script>
 <script defer src="js/features/bag.js"></script>
-<script defer src="js/features/week.js"></script>
+<script defer src="js/features/recent.js"></script>
+<script defer src="js/features/daily.js"></script>
 <script defer src="js/app/dialogs.js"></script>
 <script defer src="js/app/toast.js"></script>
 <script defer src="js/app/router.js"></script>
@@ -67,12 +68,12 @@
         <span id="logoBox"></span>
         <div>
           <h1>TÜRKİYE <b>AFET</b> HARİTASI</h1>
-          <div class="byline">Hazırlayan: <strong>Hakan Er</strong> · Ortaokul öğrencileri için</div>
+          <div class="byline">Hazırlayan: <strong>Hakan Er</strong>, Sosyal Bilgiler Öğretmeni · Ortaokul öğrencileri için</div>
         </div>
       </div>
       <nav class="modes" aria-label="Bölümler">
         <button type="button" data-mode="explore" data-ic="compass" aria-pressed="true">Keşfet</button>
-        <button type="button" data-mode="week" data-ic="week" aria-pressed="false">Son 1 Hafta</button>
+        <button type="button" data-mode="recent" data-ic="calendar" aria-pressed="false">Son Olaylar</button>
         <button type="button" data-mode="timeline" data-ic="clock" aria-pressed="false">Zaman Tüneli</button>
         <button type="button" data-mode="quiz" data-ic="quiz" aria-pressed="false">Yarışma</button>
         <button type="button" data-open="bag" data-ic="bag">Afet Çantası</button>
@@ -103,6 +104,7 @@
           <button type="button" class="ibtn" id="zFit" aria-label="Türkiye'nin tamamını göster" title="Türkiye'nin tamamı"></button>
         </div>
         <div class="scalebar" id="scalebar"></div>
+        <section class="daily" id="daily" aria-label="Günün bilgisi"></section>
         <div class="wm">Hakan Er · Türkiye Afet Haritası</div>
         <div class="tip" id="tip" hidden></div>
         <div class="toast" id="toast" hidden></div>
@@ -112,7 +114,7 @@
     <aside class="panel" id="panel" aria-label="Bilgi paneli"></aside>
   </main>
   <footer class="band band-foot">
-    <div class="band-in"><span>© 2026 Hakan Er · Türkiye Afet Haritası · Eğitim amaçlı hazırlanmıştır.</span><span>Acil durumlarda <b>112</b></span></div>
+    <div class="band-in"><span>© 2026 Hakan Er, Sosyal Bilgiler Öğretmeni · Türkiye Afet Haritası · Eğitim amaçlı hazırlanmıştır.</span><span>Acil durumlarda <b>112</b></span></div>
   </footer>
 </div>
 <div class="sr-only" id="live" aria-live="polite"></div>

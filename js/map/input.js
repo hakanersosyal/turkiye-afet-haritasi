@@ -64,15 +64,15 @@ function tap(t) {
   if (!t || !t.closest) return;
   const mk = t.closest(".mk");
   if (mk) { onMarker(mk.dataset.ev); return; }
-  const wq = t.closest(".wq");
-  if (wq) { weekQuake(+wq.dataset.wq); return; }
+  const rq = t.closest(".rq");
+  if (rq) { rcQuake(+rq.dataset.rq); return; }
   const fh = t.closest(".fault-hit");
   if (fh && S.mode === "explore") { openFault(fh.dataset.fault); return; }
   const p = t.closest(".prov");
   if (!p) return;
   const id = +p.dataset.id;
   if (S.mode === "quiz") quizMapAnswer(id);
-  else if (S.mode === "week") weekProv(id);
+  else if (S.mode === "recent") rcProv(id);
   else if (S.mode === "explore") {
     selectProv(id);
     if (!WIDE.matches) showToast(`<b>${esc(PROV[id].n)}</b> seçildi <button class="tlink" data-act="to-panel">Bilgileri gör</button>`, { ms: 6000 });
@@ -92,8 +92,8 @@ function hover(e) {
   const t = e.target;
   const mk = t.closest && t.closest(".mk");
   if (mk) { unhover(); const ev = EV[mk.dataset.ev]; showTip(e, ev.t, ev.date || ev.sub || ""); return; }
-  const wq = t.closest && t.closest(".wq");
-  if (wq) { unhover(); const q = WQ[+wq.dataset.wq]; showTip(e, `${n1(q.mag)} büyüklüğünde deprem`, `${q.place.split(" · ")[0]} · ${wqWhen(q)}`); return; }
+  const rq = t.closest && t.closest(".rq");
+  if (rq) { unhover(); const q = QK.list[+rq.dataset.rq]; showTip(e, `${n1(q.mag)} büyüklüğünde deprem`, `${q.where} · ${rqWhen(q)}`); return; }
   const fh = t.closest && t.closest(".fault-hit");
   if (fh && S.mode === "explore") { unhover(); showTip(e, FAULT_INFO[fh.dataset.fault].n, "Bilgi için dokun"); return; }
   const p = t.closest && t.closest(".prov");
@@ -104,7 +104,7 @@ function hover(e) {
 }
 function unhover() { if (hovId != null) { hovId = null; drawHover(); } }
 function tipSub(id) {
-  if (S.mode === "week") return weekTip(id);
+  if (S.mode === "recent") return rcTip(id);
   if (S.mode !== "explore" || S.hz === "iller" || S.hz === "volkan") return `${pad2(id)} · ${regionName(id)} Bölgesi`;
   const lvl = RISK[id][RISK_KEYS.indexOf(S.hz)];
   return `${HAZ[S.hz].name}: ${LEVEL[lvl]}`;
@@ -120,4 +120,4 @@ function liftPiece(group, id, sel) {
   group.appendChild(c);
 }
 const drawHover = () => liftPiece(L.liftHov, hovId && hovId !== S.sel ? hovId : null, false);
-const drawSel = () => { liftPiece(L.liftSel, S.mode === "explore" || S.mode === "week" ? S.sel : null, true); drawHover(); };
+const drawSel = () => { liftPiece(L.liftSel, S.mode === "explore" || S.mode === "recent" ? S.sel : null, true); drawHover(); };

@@ -1,8 +1,9 @@
-// Türkiye Afet Haritası · Son 1 haftanın depremleri (AFAD Deprem Kataloğu)
+// Türkiye Afet Haritası · Kayıtlı bir haftanın depremleri (AFAD Deprem Kataloğu)
+// Son Olaylar bölümü depremleri internetten canlı alır; bu kayıt yalnızca internet yokken gösterilir.
 // tools/afad_haftalik.py ile üretildi; elle düzenlemeyin.
 'use strict';
 
-const WEEK_QUAKES = {
+const SAVED_QUAKES = {
   from: "2026-10-14 00:00", to: "2026-10-21 19:55", days: 7.83,  // Türkiye saati
   total: 728,  // Türkiye ve çevresinde kaydedilen tüm depremler
   minMag: 2,  // haritada gösterilen en küçük büyüklük

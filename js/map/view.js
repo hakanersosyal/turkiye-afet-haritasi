@@ -21,7 +21,7 @@ function applyVB() {
   svg.setAttribute("viewBox", `${v.x.toFixed(2)} ${v.y.toFixed(2)} ${v.w.toFixed(2)} ${v.h.toFixed(2)}`);
   S.u = v.w / Math.max(1, size.w);
   svg.style.setProperty("--u", S.u.toFixed(4));
-  if (L.wkPat) L.wkPat.setAttribute("patternTransform", `rotate(45) scale(${S.u.toFixed(4)})`);
+  if (L.rcPat) L.rcPat.setAttribute("patternTransform", `rotate(45) scale(${S.u.toFixed(4)})`);
   const z = TB.w * 1.06 / v.w;
   svg.classList.toggle("z2", z > 2.4);
   svg.classList.toggle("zoomed", z > 1.12);
