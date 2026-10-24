@@ -20,7 +20,7 @@ const RECENT_SRC = {
   iski: ["İSKİ verileri: Barajlarda doluluk yüzde 50'yi geçti (AA, 18 Ekim)", "https://www.aa.com.tr/tr/gundem/istanbula-su-saglayan-barajlardaki-doluluk-yuzde-50yi-gecti/4092412"],
   iskiCanli: ["İSKİ baraj doluluk oranları (güncel)", "https://iski.istanbul/baraj-doluluk/"],
   afad: ["AFAD: Sahada 60 bin 395 personel görevde (AA, 17 Ekim)", "https://www.aa.com.tr/tr/gundem/afad-saganakla-mucadele-calismalarinda-60-bin-395-personel-ile-8-bin-927-arac-gorev-yapmaktadir/4091584"],
-  katalog: ["AFAD Deprem Kataloğu", "https://deprem.afad.gov.tr/event-catalog"]
+  kandilli: ["Kandilli Rasathanesi: Son depremler", "http://www.koeri.boun.edu.tr/scripts/lst0.asp"]
 };
 
 const RECENT = {

@@ -6,11 +6,16 @@ const RC_EVENTS = EVENTS.filter(e => e.recent);
 const PROV_ID = {};
 GEO.prov.forEach(p => { PROV_ID[fold(p.n)] = p.id; });
 
-// Depremler EMSC'den (Avrupa-Akdeniz Sismoloji Merkezi) canlı alınır. EMSC, AFAD ve Kandilli'nin kayıtlarını da toplar
-// ve tarayıcıdan okunmasına izin verir (AFAD'ın servisi izin vermiyor). İnternet yoksa kayıtlı AFAD verisi gösterilir.
+// Depremler Kandilli Rasathanesi'nden gelir. Kandilli'nin listesi tarayıcıdan okunamadığı için GitHub onu her saat
+// js/data/kandilli.js dosyasına yazar (tools/kandilli.py). Dosyadaki son depremden sonrakiler EMSC'den (Avrupa-Akdeniz
+// Sismoloji Merkezi) canlı alınır; EMSC, AFAD ve Kandilli'nin kayıtlarını da toplar. İnternet yoksa yalnızca dosya gösterilir.
 const EMSC = "https://www.seismicportal.eu/fdsnws/event/1/query";
-const QK_FRAME = [25.5, 35.6, 45.0, 42.3];  // batı, güney, doğu, kuzey (tools/afad_haftalik.py ile aynı)
+const QK_FRAME = [25.5, 35.6, 45.0, 42.3];  // batı, güney, doğu, kuzey (tools/kandilli.py ile aynı)
 const QK_DAYS = 7, QK_MIN = 2, NEAR_KM = 50, DAY = 864e5, TSI = 3 * 36e5;  // Türkiye saati = UTC+3
+const QK_BY = { KOERI: "Kandilli Rasathanesi", AFAD: "AFAD", EMSC: "EMSC (Avrupa-Akdeniz Sismoloji Merkezi)" };
+const EMSC_SRC = ["EMSC (Avrupa-Akdeniz Sismoloji Merkezi): Son depremler", "https://www.emsc-csem.org/"];
+const kandilliMs = t => Date.parse(t.replace(" ", "T") + "+03:00");
+const KANDILLI_MS = KANDILLI.length ? kandilliMs(KANDILLI[0][0]) : 0;  // dosyadaki en yeni deprem
 let QK = null;       // { live, total, days, max, min, list, byProv, src, at | range }
 let rqBusy = false;
 
@@ -23,6 +28,21 @@ const REGION_TR = [
   [/LEBANON/, "Lübnan"], [/TURKEY/, "Türkiye"]
 ];
 const regionTr = r => { const m = REGION_TR.find(([re]) => re.test(r)); return m ? m[1] : r; };
+// Kandilli yer adlarını Türkçe harfler olmadan büyük harfle yazar: "SILIFKE ACIKLARI-MERSIN (AKDENIZ)".
+// Denizdeki ya da yurt dışındaki depremin yeri için parantez içi (yoksa tamamı) sözcük sözcük düzeltilir.
+const KANDILLI_TR = {
+  ege: "Ege", akdeniz: "Akdeniz", karadeniz: "Karadeniz", marmara: "Marmara", denizi: "Denizi", korfezi: "Körfezi", golu: "Gölü",
+  turkiye: "Türkiye", yunanistan: "Yunanistan", bulgaristan: "Bulgaristan", gurcistan: "Gürcistan", ermenistan: "Ermenistan",
+  azerbaycan: "Azerbaycan", nahcivan: "Nahçıvan", iran: "İran", irak: "Irak", suriye: "Suriye", lubnan: "Lübnan",
+  kibris: "Kıbrıs", rum: "Rum", kesimi: "Kesimi", sinir: "sınır", bolgesi: "bölgesi", aciklari: "açıkları"
+};
+function kandilliRegion(place) {
+  const m = place.match(/\(([^)]+)\)\s*$/);
+  return (m ? m[1] : place).split(/([\s-]+)/).map(w => {
+    const f = fold(w);
+    return KANDILLI_TR[f] || (PROV_ID[f] ? PROV[PROV_ID[f]].n : w.charAt(0) + w.slice(1).toLowerCase());
+  }).join("");
+}
 
 // Haritadaki noktanın içinde olduğu il; denizde ya da sınırın ötesindeyse en fazla 50 km uzaktaki en yakın il.
 let provBox = null;
@@ -73,43 +93,51 @@ function countByProv(rows) {
 }
 
 // ------------------------------------------------------------------ depremleri yükleme
-function fetchQuakes() {
-  const [w, s, e, n] = QK_FRAME, start = new Date(Date.now() - QK_DAYS * DAY).toISOString().slice(0, 19);
+function fetchQuakes(since) {
+  const [w, s, e, n] = QK_FRAME, start = new Date(since).toISOString().slice(0, 19);
   const ctl = new AbortController(), timer = setTimeout(() => ctl.abort(), 12000);
   return fetch(`${EMSC}?format=json&limit=5000&minlat=${s}&maxlat=${n}&minlon=${w}&maxlon=${e}&start=${start}`, { signal: ctl.signal })
-    .then(r => { if (!r.ok) throw new Error("EMSC " + r.status); return r.json(); })
-    .then(d => { if (!d.features || !d.features.length) throw new Error("EMSC boş"); return d.features; })
+    .then(r => { if (r.status === 204) return {}; if (!r.ok) throw new Error("EMSC " + r.status); return r.json(); })  // 204: o andan beri deprem yok
+    .then(d => d.features || [])
     .finally(() => clearTimeout(timer));
 }
-function liveQuakes(features) {
-  const rows = features.map(f => f.properties).filter(p => !p.evtype || p.evtype.endsWith("e")).map(p => {  // ke, se: deprem
-    const [px, py] = proj(p.lon, p.lat), at = provAt(px, py);
-    return {
-      id: p.unid, lat: p.lat, lon: p.lon, px, py, mag: Math.round(p.mag * 10) / 10, depth: Math.abs(Math.round(p.depth * 10) / 10),
-      time: new Date(Date.parse(p.time) + TSI).toISOString().slice(0, 16).replace("T", " "),
-      il: at ? at.id : 0,
-      where: at && !at.near ? PROV[at.id].n : regionTr(p.flynn_region || ""),
-      near: at && at.near ? "en yakın il: " + PROV[at.id].n : ""
-    };
-  });
-  const list = rows.filter(q => q.mag >= QK_MIN).sort((a, b) => a.mag - b.mag || (a.time < b.time ? -1 : 1)).map((q, i) => ({ ...q, i }));
+// Kandilli ve EMSC kayıtlarını aynı biçime getirir; il, haritadaki noktadan bulunur.
+function quakeRow(o) {  // o: { ms, lat, lon, depth, mag, region, src, id (EMSC) | place (Kandilli) }
+  const [px, py] = proj(o.lon, o.lat), at = provAt(px, py), where = at && !at.near ? PROV[at.id].n : o.region;
   return {
-    live: true, at: new Date(), total: rows.length, days: QK_DAYS, min: QK_MIN, max: Math.max(...rows.map(q => q.mag)),
-    list, byProv: countByProv(rows), src: ["EMSC (Avrupa-Akdeniz Sismoloji Merkezi): Son depremler", "https://www.emsc-csem.org/"]
+    ...o, px, py, mag: Math.round(o.mag * 10) / 10, depth: Math.abs(Math.round(o.depth * 10) / 10),
+    time: new Date(o.ms + TSI).toISOString().slice(0, 16).replace("T", " "),
+    il: at ? at.id : 0, where,
+    near: at && at.near && where !== PROV[at.id].n ? "en yakın il: " + PROV[at.id].n : ""
   };
 }
-function savedQuakes() {
-  const Q = SAVED_QUAKES;
-  const list = Q.list.map(([lat, lon, mag, depth, time, place], i) => {  // dosyada küçükten büyüğe sıralı: büyükler üstte çizilir
-    const [px, py] = proj(lon, lat), at = provAt(px, py), [where, near = ""] = place.split(" · ");
-    return { i, id: null, lat, lon, px, py, mag, depth, time, where, near, il: at ? at.id : 0 };
-  });
-  const byProv = new Map();
-  Q.byProv.forEach(([n, c, m]) => { const id = PROV_ID[fold(n)]; if (id) byProv.set(id, { c, m }); });
-  return {
-    live: false, range: rangeTr(Q.from, Q.to), total: Q.total, days: Q.days, min: Q.minMag,
-    max: Math.max(...list.map(q => q.mag), ...Q.byProv.map(r => r[2])), list, byProv, src: RECENT_SRC.katalog
-  };
+function kandilliRows(from) {
+  const rows = [];
+  for (const [t, lat, lon, depth, mag, place] of KANDILLI) {  // en yenisi üstte
+    const ms = kandilliMs(t);
+    if (ms < from) break;
+    rows.push(quakeRow({ ms, lat, lon, depth, mag, place, region: kandilliRegion(place), src: "KOERI" }));
+  }
+  return rows;
+}
+const emscRows = features => features.map(f => f.properties).filter(p => !p.evtype || p.evtype.endsWith("e")).map(p => quakeRow({  // ke, se: deprem
+  id: p.unid, ms: Date.parse(p.time), lat: p.lat, lon: p.lon, depth: p.depth, mag: p.mag, region: regionTr(p.flynn_region || ""), src: p.auth
+}));
+function quakeSet(rows) {
+  const list = rows.filter(q => q.mag >= QK_MIN).sort((a, b) => a.mag - b.mag || a.ms - b.ms).map((q, i) => ({ ...q, i }));
+  return { total: rows.length, min: QK_MIN, max: Math.max(...rows.map(q => q.mag)), list, byProv: countByProv(rows) };
+}
+function liveQuakes(features) {
+  const k = kandilliRows(Date.now() - QK_DAYS * DAY);
+  // Sınırdaki deprem hem Kandilli'de hem EMSC'de olabilir: bir dakika ve yarım derece içindekiler aynı sayılır.
+  const same = (a, b) => Math.abs(a.ms - b.ms) < 6e4 && Math.abs(a.lat - b.lat) < .5 && Math.abs(a.lon - b.lon) < .5;
+  const rows = [...k, ...emscRows(features).filter(e => !k.some(q => same(q, e)))];
+  if (!rows.length) throw new Error("deprem yok");
+  return { live: true, at: new Date(), days: QK_DAYS, ...quakeSet(rows), src: [RECENT_SRC.kandilli, EMSC_SRC] };
+}
+function savedQuakes() {  // dosyadaki en yeni depremden geriye 7 gün
+  const rows = kandilliRows(KANDILLI_MS - QK_DAYS * DAY), first = rows[rows.length - 1];
+  return { live: false, range: rangeTr(first.time, rows[0].time), days: (rows[0].ms - first.ms) / DAY || 1, ...quakeSet(rows), src: [RECENT_SRC.kandilli] };
 }
 const keepScroll = f => { const st = panel.scrollTop; f(); panel.scrollTop = st; };
 function loadQuakes() {
@@ -117,7 +145,7 @@ function loadQuakes() {
   rqBusy = true;
   const again = !!QK;
   if (again && S.mode === "recent") keepScroll(renderPanel);
-  fetchQuakes().then(liveQuakes).catch(() => null).then(q => {
+  fetchQuakes(Math.max(Date.now() - QK_DAYS * DAY, KANDILLI_MS)).then(liveQuakes).catch(() => null).then(q => {
     rqBusy = false;
     if (!q && again) {  // yenileme olmadı: eldeki veri kalsın
       showToast("Son depremler alınamadı. İnternet bağlantını kontrol et.", { ms: 6000 });
@@ -201,7 +229,7 @@ function rcTip(id) {
 
 // ------------------------------------------------------------------ lejant ve panel
 function recentLegend() {
-  const qk = !QK ? "Depremler yükleniyor" : `Deprem: ${QK.live ? "son 7 gün" : QK.range + ", AFAD"} (${n1(QK.min)} ve üzeri)`;
+  const qk = !QK ? "Depremler yükleniyor" : `Deprem: ${QK.live ? "son 7 gün" : QK.range + ", Kandilli"} (${n1(QK.min)} ve üzeri)`;
   return `<span class="lg-t">Son olaylar:</span>` +
     `<span class="lg-i"><span class="sw sw-rc"></span>Sel ve su baskını yaşanan iller</span>` +
     `<span class="lg-i"><svg class="ico" viewBox="0 0 24 24" style="color:var(--sel-3)">${ICON.pin}</svg>Afet olayı</span>` +
@@ -233,7 +261,7 @@ function quakeHome() {
   const retry = `<button class="tlink" data-act="rc-reload">${QK.live ? "Yenile" : "Yeniden dene"}</button>`;
   const status = rqBusy ? "Yenileniyor…" : QK.live
     ? `<span class="live" aria-hidden="true"></span>Canlı veri · Son güncelleme: ${hhmm(QK.at)} ${retry}`
-    : `İnternete bağlanılamadı. Örnek olarak AFAD'ın ${QK.range} tarihleri arasında kaydettiği depremler gösteriliyor. ${retry}`;
+    : `Canlı veriye ulaşılamadı. Kandilli Rasathanesi'nin ${QK.range} tarihleri arasında kaydettiği depremler gösteriliyor. ${retry}`;
   return `<section><h3>${QK.live ? "Son 7 günün depremleri" : "Depremler"}</h3><p class="rc-status">${status}</p>
 <div class="rc-stats">${tiles.map(([v, t, c]) => `<div class="rc-stat" style="--c:var(--${c})"><b>${v}</b><span>${t}</span></div>`).join("")}</div>
 ${top.length ? `<p style="margin-top:.9rem">Haritadaki kırmızı noktalar bu depremlerden ${n1(QK.min)} ve daha büyük olanları gösteriyor. En büyükleri:</p><div class="evlist">${top.map(rqRow).join("")}</div>` : ""}
@@ -242,8 +270,8 @@ ${busy.length ? `<p class="chips-l">En çok deprem kaydedilen iller:</p><div cla
 }
 function viewRecentHome() {
   const seen = new Set();
-  const src = [...(QK ? [QK.src] : []), ...RC_EVENTS.flatMap(e => e.src || []), ...RECENT.sources].filter(([, u]) => !seen.has(u) && seen.add(u));
-  const qnote = !QK ? "" : QK.live ? " Deprem verisi: EMSC (Avrupa-Akdeniz Sismoloji Merkezi). EMSC, AFAD ve Kandilli Rasathanesi dahil birçok kurumun kayıtlarını bir araya getirir." : " Deprem verisi: AFAD Deprem Kataloğu.";
+  const src = [...(QK ? QK.src : []), ...RC_EVENTS.flatMap(e => e.src || []), ...RECENT.sources].filter(([, u]) => !seen.has(u) && seen.add(u));
+  const qnote = !QK ? "" : QK.live ? " Deprem verisi: Kandilli Rasathanesi. Kandilli'nin listesi sitede saatte bir yenilenir; aradaki en yeni depremler EMSC'den (Avrupa-Akdeniz Sismoloji Merkezi) canlı alınır. Her depremin kaynağı kendi bilgi kartında yazar." : " Deprem verisi: Kandilli Rasathanesi.";
   return `<div class="hero rc-hero"><div class="eyebrow" style="--c:var(--danger)">${ic("calendar")} Son Olaylar</div>
 <h2>Türkiye'de son neler oldu?</h2>
 <p class="lede">Son 7 günde kaydedilen depremleri ve yakın zamanda yaşanan önemli afetleri burada bulabilirsin. Depremler internetten kendiliğinden güncellenir.</p></div>
@@ -262,12 +290,14 @@ function viewRecentQuake(q) {
   const band = [...MAG_BANDS].reverse().find(b => q.mag >= b.min);
   const feel = band ? band.txt : q.mag < 2.5 ? "Çok küçük bir deprem: Genellikle hissedilmez ama sismograflar kaydeder."
     : "Küçük bir deprem: Merkezine yakın bazı kişiler hissedebilir ama hasar yapmaz.";
-  const src = q.id ? ["EMSC: Bu depremin ayrıntıları", `https://www.seismicportal.eu/eventdetails.html?unid=${encodeURIComponent(q.id)}`] : RECENT_SRC.katalog;
-  return `${rcBackBtn()}<div style="--c:var(--deprem-3)"><div class="eyebrow">${ic("deprem")} Deprem · ${QK.live ? "Son 7 gün" : "AFAD kaydı"}</div>
+  const src = q.id ? ["EMSC: Bu depremin ayrıntıları", `https://www.seismicportal.eu/eventdetails.html?unid=${encodeURIComponent(q.id)}`] : RECENT_SRC.kandilli;
+  const by = QK_BY[q.src] || `${q.src || "EMSC"} (EMSC aracılığıyla)`;
+  return `${rcBackBtn()}<div style="--c:var(--deprem-3)"><div class="eyebrow">${ic("deprem")} Deprem · ${QK.live ? "Son 7 gün" : "Kandilli kaydı"}</div>
 <h2>${esc(q.where)}</h2>${q.near ? `<p class="lede" style="margin-top:-.2rem">${esc(q.near)}</p>` : ""}
 <div class="magbig"><span class="m">${n1(q.mag)}</span><span><b>büyüklüğünde</b><small>${magWord(q.mag)}</small></span></div>
-<dl class="stats"><div class="stat"><dt>Tarih</dt><dd>${rqWhen(q, true)}</dd></div><div class="stat"><dt>Derinlik</dt><dd>${n1(q.depth)} km</dd></div></dl>
-<p>${feel}</p>
+<dl class="stats"><div class="stat"><dt>Tarih</dt><dd>${rqWhen(q, true)}</dd></div><div class="stat"><dt>Derinlik</dt><dd>${n1(q.depth)} km</dd></div>
+<div class="stat" style="grid-column:1/-1"><dt>Kaynak</dt><dd>${esc(by)}</dd></div></dl>
+<p>${feel}</p>${q.place ? `<p class="note">Kandilli bu depremin yerini şöyle yazdı: ${esc(q.place)}</p>` : ""}
 ${q.il ? `<section><h3>İlgili il</h3><div class="chips"><button class="chip" data-act="rc-prov" data-id="${q.il}">${PROV[q.il].n}</button></div></section>` : ""}
 ${srcLinks([src])}</div>`;
 }

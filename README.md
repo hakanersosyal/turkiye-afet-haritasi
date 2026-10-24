@@ -12,7 +12,7 @@ Ortaokul öğrencileri için etkileşimli Türkiye afet haritası.
 - Deprem zaman tüneli ve KAF domino hikâyesi
 - 25 soruluk bilgi yarışması ve sertifika, afet çantası oyunu, afet sözlüğü
 - **Günün Bilgisi:** haritanın köşesinde her gün değişen bir “Biliyor muydun?” bilgisi
-- **Son Olaylar:** son 7 günün depremleri (her açılışta internetten kendiliğinden güncellenir) ve yakın zamanda yaşanan gerçek afetler (her olayın kaynak bağlantılarıyla)
+- **Son Olaylar:** Kandilli Rasathanesi'nin kaydettiği son 7 günün depremleri (kendiliğinden güncellenir) ve yakın zamanda yaşanan gerçek afetler (her olayın kaynak bağlantılarıyla)
 
 Bir bölümü doğrudan açmak için adresin sonuna ekleyin:
 `#sonolaylar`, `#zaman`, `#yarisma`, `#canta`, `#sozluk`, `#deprem`, `#sel`, `#heyelan`, `#cig`, `#yangin`, `#kuraklik`, `#tsunami`, `#volkan`
@@ -22,8 +22,8 @@ Bir bölümü doğrudan açmak için adresin sonuna ekleyin:
 ## İnternetsiz kullanım (akıllı tahta)
 
 GitHub'da **Code → Download ZIP** ile indirin, klasörü açın ve `index.html` dosyasına çift tıklayın. Kurulum gerekmez.
-İnternet yoksa başlık yazı tipleri yerine bilgisayarın kendi yazı tipi kullanılır ve Son Olaylar'da canlı depremler yerine
-kayıtlı bir haftanın AFAD depremleri gösterilir; geri kalan her şey çalışır.
+İnternet yoksa başlık yazı tipleri yerine bilgisayarın kendi yazı tipi kullanılır ve Son Olaylar'da, ZIP'i indirdiğiniz ana kadar
+Kandilli'nin kaydettiği son 7 günün depremleri gösterilir; geri kalan her şey çalışır.
 
 ## Klasör yapısı
 
@@ -34,13 +34,14 @@ js/data/                   içerik: metinler buradan düzenlenir
   hazards.js               afet türleri: tanım, neden, ne yapmalıyım
   events.js                haritadaki tarihî olaylar ve yerler
   recent.js                Son Olaylar: yakın zamanda yaşanan afetler, dersler ve kaynaklar
-  recent-quakes.js         internet yokken gösterilen kayıtlı depremler (araçla üretilir)
+  kandilli.js              Kandilli'nin son depremleri (her saat kendiliğinden güncellenir, elle düzenlenmez)
   regions.js               illerin risk düzeyleri ve bölgeleri
   faults.js, glossary.js, quiz.js, bag.js, province-facts.js, magnitude.js
   geo.js                   harita geometrisi (elle düzenlenmez)
 js/art/                    SVG çizimler ve simgeler
 js/core/, js/map/, js/app/, js/features/   uygulama kodu
-tools/afad_haftalik.py     AFAD'dan bir haftanın deprem verisini çeker (kayıtlı depremler için)
+tools/kandilli.py          Kandilli'nin listesini çekip js/data/kandilli.js'e yazar
+.github/workflows/         kandilli.yml: tools/kandilli.py'yi GitHub'da her saat çalıştırır
 ```
 
 Betikler `index.html`'deki sırayla yüklenen klasik betiklerdir; bu sayede site çift tıklanarak da çalışır.
@@ -50,19 +51,18 @@ Yeni bir dosya eklerken `index.html`'deki sıraya dikkat edin: veri dosyaları k
 
 Düzenli güncelleme gerekmez:
 
-- **Depremler** her açılışta EMSC'den (Avrupa-Akdeniz Sismoloji Merkezi) canlı alınır. EMSC, AFAD ve Kandilli'nin kayıtlarını da toplar.
-  (AFAD'ın servisi tarayıcıdan okunmaya izin vermediği için doğrudan AFAD kullanılamıyor.)
+- **Depremler** Kandilli Rasathanesi'nden gelir. Kandilli'nin listesi tarayıcıdan okunamadığı için (yalnızca `http`, başka sitelere izin yok)
+  GitHub her saat listeyi çekip `js/data/kandilli.js` dosyasına kaydeder (Actions sekmesinde "Kandilli depremleri"). Site, bu kayıttan
+  sonraki en yeni depremleri EMSC'den (Avrupa-Akdeniz Sismoloji Merkezi) canlı alır. Her depremin kaynağı kendi bilgi kartında yazar.
+  Kandilli'ye bir süre ulaşılamazsa site kendiliğinden EMSC'ye geçer.
 - **Afetler** tarihleriyle birlikte listelenir. Bir olay, bittiği günden (`on` alanı) sonraki 30 gün boyunca "YENİ" olarak işaretlenir; sonra kendiliğinden normal görünür.
 
 Yeni bir afet eklemek isterseniz `js/data/recent.js` içindeki `events` listesinin başına ekleyin, `updated` tarihini değiştirin.
 Her olayın `src` alanına resmî açıklamanın bağlantısını ekleyin. Rakamları kurumun kendi açıklamasından (valilik, bakanlık, AFAD, belediye) alın;
 bağlantı olarak kurumun sitesini ya da açıklamayı aktaran Anadolu Ajansı, DHA veya TRT Haber'i kullanın. Yalnızca tek bir haber sitesinde geçen bilgileri eklemeyin.
 
-İnternet yokken gösterilen kayıtlı depremleri yenilemek için (Türkiye saatiyle tarih aralığı):
-
-```
-python3 tools/afad_haftalik.py 2026-10-21 2026-10-28
-```
+Depoya her saat otomatik bir kayıt ("Kandilli depremleri güncellendi") eklendiği için, kendi bilgisayarınızdan değişiklik
+göndermeden önce `git pull --rebase` yapın.
 
 ## Kaynaklar
 
@@ -70,7 +70,7 @@ python3 tools/afad_haftalik.py 2026-10-21 2026-10-28
 - Deprem bilgileri: AFAD, Kandilli Rasathanesi ve Deprem Araştırma Enstitüsü
 - Fay hatları: MTA diri fay haritası esas alınarak basitleştirildi
 - Diğer bilgiler: AFAD, Meteoroloji Genel Müdürlüğü, Orman Genel Müdürlüğü, DSİ
-- Son Olaylar: depremler EMSC (canlı) ve AFAD Deprem Kataloğu (kayıtlı); afetler İstanbul, Kocaeli, Sakarya, Yalova ve Antalya valilikleri, İçişleri Bakanlığı, Çevre, Şehircilik ve İklim Değişikliği Bakanlığı, AFAD, Meteoroloji Genel Müdürlüğü, İBB AKOM, İSKİ ve Kocaeli Büyükşehir Belediyesi açıklamaları; kurumların kendi sitelerinden ya da onları aktaran Anadolu Ajansı, DHA ve TRT Haber'den (bağlantılar sitede, her olayın kartında)
+- Son Olaylar: depremler Kandilli Rasathanesi ve EMSC (canlı); afetler İstanbul, Kocaeli, Sakarya, Yalova ve Antalya valilikleri, İçişleri Bakanlığı, Çevre, Şehircilik ve İklim Değişikliği Bakanlığı, AFAD, Meteoroloji Genel Müdürlüğü, İBB AKOM, İSKİ ve Kocaeli Büyükşehir Belediyesi açıklamaları; kurumların kendi sitelerinden ya da onları aktaran Anadolu Ajansı, DHA ve TRT Haber'den (bağlantılar sitede, her olayın kartında)
 
 ## Önemli not
 

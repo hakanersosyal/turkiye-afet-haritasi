@@ -1,0 +1,37 @@
+# Kandilli Rasathanesi'nin son depremler listesini her saat js/data/kandilli.js dosyasına yazar.
+# Liste değiştiyse kaydeder; GitHub Pages siteyi kendiliğinden yeniden yayınlar.
+# Kandilli'ye ulaşılamazsa iş hata vermeden geçer (site o arada EMSC'yi kullanır), bir sonraki saat yeniden dener.
+name: Kandilli depremleri
+
+on:
+  schedule:
+    - cron: "17 * * * *"   # her saat 17 geçe (GitHub bazen birkaç dakika geciktirir)
+  workflow_dispatch:        # Actions sekmesinden elle de çalıştırılabilir
+
+permissions:
+  contents: write
+
+concurrency:
+  group: kandilli
+
+jobs:
+  guncelle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Kandilli'nin listesini çek
+        id: cek
+        continue-on-error: true
+        run: python3 tools/kandilli.py
+
+      - name: Değiştiyse kaydet
+        if: steps.cek.outcome == 'success'
+        run: |
+          git diff --quiet -- js/data/kandilli.js && exit 0
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -q -m "Kandilli depremleri güncellendi" -- js/data/kandilli.js
+          git pull -q --rebase
+          git push -q
