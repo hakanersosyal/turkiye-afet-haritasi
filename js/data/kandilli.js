@@ -5,6 +5,7 @@
 
 // Türkiye saati, enlem, boylam, derinlik (km), büyüklük, Kandilli'nin yazdığı yer; en yenisi üstte
 const KANDILLI = [
+  ["2026-10-25 23:36:46", 37.0407, 28.9282, 12.5, 1.4, "OTMANLAR-KOYCEGIZ (MUGLA)"],
   ["2026-10-25 23:14:09", 38.4802, 38.0075, 8.7, 1.5, "KEKLIKPINARI-AKCADAG (MALATYA)"],
   ["2026-10-25 22:59:07", 37.0348, 28.9265, 8.0, 3.4, "OTMANLAR-KOYCEGIZ (MUGLA)"],
   ["2026-10-25 22:08:55", 37.3125, 37.0323, 5.0, 2.2, "CENNETPINARI-PAZARCIK (KAHRAMANMARAS)"],
