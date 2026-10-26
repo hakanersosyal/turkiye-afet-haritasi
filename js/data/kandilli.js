@@ -5,6 +5,10 @@
 
 // Türkiye saati, enlem, boylam, derinlik (km), büyüklük, Kandilli'nin yazdığı yer; en yenisi üstte
 const KANDILLI = [
+  ["2026-10-27 02:04:29", 40.592, 29.2063, 5.4, 1.8, "YENIMAHALLE-TERMAL (YALOVA)"],
+  ["2026-10-27 02:00:15", 39.8958, 42.8845, 10.5, 1.7, "GUVENDIK-(AGRI)"],
+  ["2026-10-27 01:54:06", 38.272, 38.502, 13.1, 1.3, "YAYGIN-(MALATYA)"],
+  ["2026-10-27 01:42:33", 38.3008, 38.193, 22.3, 1.0, "IKIZCE-YESILYURT (MALATYA)"],
   ["2026-10-27 01:31:01", 40.5992, 29.1672, 1.4, 1.7, "TERMAL (YALOVA)"],
   ["2026-10-27 00:56:23", 36.6553, 25.6848, 6.9, 2.2, "EGE DENIZI"],
   ["2026-10-27 00:34:30", 39.1963, 28.3017, 8.6, 1.5, "ASLANDEDE-SINDIRGI (BALIKESIR)"],
