@@ -5,6 +5,8 @@
 
 // Türkiye saati, enlem, boylam, derinlik (km), büyüklük, Kandilli'nin yazdığı yer; en yenisi üstte
 const KANDILLI = [
+  ["2026-11-05 09:17:25", 37.771, 36.5263, 5.0, 3.2, "KAYNAR-(KAHRAMANMARAS)"],
+  ["2026-11-05 08:35:47", 36.2162, 29.2805, 7.7, 1.9, "GELEMIS-KAS (ANTALYA)"],
   ["2026-11-05 07:48:00", 38.464, 37.8848, 6.8, 2.4, "SAKALIUZUN-AKCADAG (MALATYA)"],
   ["2026-11-05 07:08:38", 37.549, 35.6075, 7.8, 1.8, "AKDAM-KOZAN (ADANA)"],
   ["2026-11-05 07:02:17", 38.403, 38.4955, 13.8, 1.2, "KARATEPE-(MALATYA)"],
