@@ -5,6 +5,7 @@
 
 // Türkiye saati, enlem, boylam, derinlik (km), büyüklük, Kandilli'nin yazdığı yer; en yenisi üstte
 const KANDILLI = [
+  ["2026-11-07 16:12:28", 39.4162, 31.5717, 0.0, 1.6, "TEKOREN-SIVRIHISAR (ESKISEHIR)"],
   ["2026-11-07 15:24:21", 37.1312, 36.7022, 6.3, 2.6, "KARABURCLU-NURDAGI (GAZIANTEP)"],
   ["2026-11-07 15:20:17", 39.2925, 28.9602, 4.6, 1.4, "YAVU-SIMAV (KUTAHYA)"],
   ["2026-11-07 14:22:07", 40.7812, 31.5525, 2.0, 2.0, "KIZILAGIL-(BOLU)"],
@@ -555,5 +556,4 @@ const KANDILLI = [
   ["2026-10-30 17:58:20", 40.2987, 29.4973, 11.3, 1.3, "SELIMIYE-YENISEHIR (BURSA)"],
   ["2026-10-30 17:44:06", 40.1637, 39.8673, 5.0, 1.4, "DEMIROZU (BAYBURT)"],
   ["2026-10-30 16:56:17", 35.6468, 27.1313, 12.7, 1.9, "EGE DENIZI"],
-  ["2026-10-30 15:44:20", 37.0983, 28.5458, 13.7, 1.8, "KIYRA-ULA (MUGLA)"],
 ];
