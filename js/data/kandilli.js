@@ -5,6 +5,7 @@
 
 // Türkiye saati, enlem, boylam, derinlik (km), büyüklük, Kandilli'nin yazdığı yer; en yenisi üstte
 const KANDILLI = [
+  ["2026-11-12 12:11:25", 36.0805, 33.5888, 13.9, 0.5, "AYDINCIK ACIKLARI-MERSIN (AKDENIZ)"],
   ["2026-11-12 11:39:43", 36.0395, 33.5317, 4.7, 3.0, "AYDINCIK ACIKLARI-MERSIN (AKDENIZ)"],
   ["2026-11-12 11:38:46", 37.7605, 36.083, 14.6, 2.0, "AKOLUK-FEKE (ADANA)"],
   ["2026-11-12 11:16:48", 38.269, 38.7837, 5.2, 1.2, "KARSIYAKA-PUTURGE (MALATYA)"],
