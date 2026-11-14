@@ -5,6 +5,10 @@
 
 // Türkiye saati, enlem, boylam, derinlik (km), büyüklük, Kandilli'nin yazdığı yer; en yenisi üstte
 const KANDILLI = [
+  ["2026-11-14 20:27:45", 37.5282, 35.5975, 9.4, 1.3, "ENIZCAKIRI-KOZAN (ADANA)"],
+  ["2026-11-14 20:02:22", 39.4303, 26.1068, 7.5, 2.0, "BABAKALE-AYVACIK (CANAKKALE)"],
+  ["2026-11-14 20:01:39", 39.4277, 26.0922, 5.2, 1.7, "BABAKALE-AYVACIK (CANAKKALE)"],
+  ["2026-11-14 19:48:32", 37.582, 35.6822, 24.1, 1.3, "KUYTUCAK-KOZAN (ADANA)"],
   ["2026-11-14 19:33:38", 37.5655, 35.6217, 5.0, 2.3, "AKARCA-KOZAN (ADANA)"],
   ["2026-11-14 18:15:32", 37.6472, 35.3647, 2.6, 2.3, "YETIMLI-ALADAG (ADANA)"],
   ["2026-11-14 16:51:59", 40.7855, 27.9195, 15.3, 2.1, "MARMARA DENIZI"],
