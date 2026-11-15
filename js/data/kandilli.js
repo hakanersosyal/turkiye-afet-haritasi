@@ -5,6 +5,8 @@
 
 // Türkiye saati, enlem, boylam, derinlik (km), büyüklük, Kandilli'nin yazdığı yer; en yenisi üstte
 const KANDILLI = [
+  ["2026-11-15 12:15:03", 40.468, 26.3523, 6.0, 1.7, "SAROS KORFEZI (EGE DENIZI)"],
+  ["2026-11-15 11:51:38", 36.214, 28.3618, 69.8, 2.0, "AKDENIZ"],
   ["2026-11-15 11:42:13", 40.4377, 26.4045, 18.5, 1.2, "SAROS KORFEZI (EGE DENIZI)"],
   ["2026-11-15 11:17:21", 38.2145, 38.5912, 5.0, 1.8, "SOGUTLU-PUTURGE (MALATYA)"],
   ["2026-11-15 10:41:32", 40.0865, 27.2895, 24.4, 1.8, "ASAGIINOVA-YENICE (CANAKKALE)"],
