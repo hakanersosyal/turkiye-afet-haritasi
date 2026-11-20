@@ -5,6 +5,7 @@
 
 // Türkiye saati, enlem, boylam, derinlik (km), büyüklük, Kandilli'nin yazdığı yer; en yenisi üstte
 const KANDILLI = [
+  ["2026-11-21 02:40:01", 38.0833, 37.8337, 11.5, 1.4, "TOPRAKTEPE-DOGANSEHIR (MALATYA)"],
   ["2026-11-21 01:26:19", 38.1768, 38.7823, 11.9, 1.2, "GOKCELI-PUTURGE (MALATYA)"],
   ["2026-11-21 01:25:07", 38.5722, 39.4685, 3.4, 1.8, "KOCKALE-(ELAZIG)"],
   ["2026-11-21 01:22:27", 38.4673, 42.9638, 16.9, 1.4, "VAN GOLU"],
@@ -530,5 +531,4 @@ const KANDILLI = [
   ["2026-11-13 05:51:39", 37.5382, 35.636, 4.4, 2.2, "AKDAM-KOZAN (ADANA)"],
   ["2026-11-13 03:35:33", 38.4607, 37.8977, 11.5, 1.7, "BAGKOY-AKCADAG (MALATYA)"],
   ["2026-11-13 03:14:53", 37.6377, 35.3695, 7.3, 1.8, "YETIMLI-ALADAG (ADANA)"],
-  ["2026-11-13 02:01:49", 36.0622, 28.689, 22.6, 3.0, "AKDENIZ"],
 ];
